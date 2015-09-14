@@ -1,0 +1,1119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" dir="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Spring整合JMS(一)——基于ActiveMQ实现 - 好好学习，天天向上 - ITeye技术网站</title>
+    <meta name="description" content="        1.1     JMS简介          JMS的全称是Java Message Service，即Java消息服务。它主要用于在生产者和消费者之间进行消息传递，生产者负责产生消息，而消费者负责接收消息。把它应用到实际的业务需求中的话我们可以在特定的时候利用生产者生成一消息，并进行发送，对应的消费者在接收到对应的消息后去完成对应的业务逻辑。对于消息的传递有两种类型，一种是点对点的 ..." />
+    <meta name="keywords" content="Spring, JMS, 整合, integrate, ActiveMQ Spring整合JMS(一)——基于ActiveMQ实现" />
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" href="/open_search.xml" title="ITeye" />
+    <link href="/rss" rel="alternate" title="好好学习，天天向上" type="application/rss+xml" />
+    <link href="http://www.iteye.com/stylesheets/blog.css?1439457290" media="screen" rel="stylesheet" type="text/css" />
+<link href="http://www.iteye.com/stylesheets/themes/blog/red.css?1326191326" media="screen" rel="stylesheet" type="text/css" />
+    <script src="http://www.iteye.com/javascripts/application.js?1358214518" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-535605-1']);
+  _gaq.push(['_setDomainName', 'iteye.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+      <link href="http://www.iteye.com/javascripts/syntaxhighlighter/SyntaxHighlighter.css?1348819953" media="screen" rel="stylesheet" type="text/css" />
+  <script src="http://www.iteye.com/javascripts/syntaxhighlighter/shCoreCommon.js?1325907333" type="text/javascript"></script>
+<script src="http://www.iteye.com/javascripts/hotkey.js?1324994303" type="text/javascript"></script>
+  <script src="http://www.iteye.com/javascripts/code_favorites.js?1358214518" type="text/javascript"></script>
+<script src="http://www.iteye.com/javascripts/weiboshare.js?1324994303" type="text/javascript"></script>
+  </head>
+  <body>
+    <div id="header">
+      <div id="blog_site_nav">
+  <a href="http://www.iteye.com/" class="homepage">首页</a>
+  <a href="http://www.iteye.com/news">资讯</a>
+  <a href="http://www.iteye.com/magazines">精华</a>
+  <a href="http://www.iteye.com/forums">论坛</a>
+  <a href="http://www.iteye.com/ask">问答</a>
+  <a href="http://www.iteye.com/blogs">博客</a>
+  <a href="http://www.iteye.com/blogs/subjects">专栏</a>
+  <a href="http://www.iteye.com/groups">群组</a>
+  <a href="#" onclick="return false;" id="msna"><u>更多</u> <small>▼</small></a>
+  <div class="quick_menu" style="display:none;">
+    <a target="_blank" href="http://job.iteye.com/iteye">招聘</a>
+    <a href="http://www.iteye.com/search">搜索</a>
+  </div>
+</div>
+
+      <div id="user_nav">
+      <a href="/login" class="welcome" title="登录">您还未登录 !</a>
+    <a href="/login">登录</a>
+    <a href="/signup" class="nobg">注册</a>
+  </div>
+
+    </div>
+
+    <div id="page">
+      <div id="branding" class="clearfix">
+        <div id="blog_name">
+          <h1><a href="/">好好学习，天天向上</a></h1>
+        </div>
+        <div id='fd'></div>
+        <div id="blog_navbar">
+          <ul>
+            <li class='blog_navbar_for'><a href="http://haohaoxuexi.iteye.com"><strong>博客</strong></a></li>
+            <li ><a href="/weibo">微博</a></li>
+            <li ><a href="/album">相册</a></li>
+            <li ><a href="/link">收藏</a></li>
+            <li ><a href="/blog/guest_book">留言</a></li>
+            <li ><a href="/blog/profile">关于我</a></li>
+          </ul>
+    
+          <div class="search">
+            <form action="/blog/search" method="get">
+              <input class="search_text" id="query" name="query" style="margin-left: 10px;width: 110px;" type="text" value="" />
+              <input class="submit_search" type="submit" value="" />
+            </form>
+          </div> 
+          <div id="fd"></div>         
+        </div>
+      </div>
+      
+      <div id="content" class="clearfix">
+        <div id="main">
+          
+
+
+
+          
+
+
+<div class="h-entry" style='display:none'>
+  <a href="http://haohaoxuexi.iteye.com" class="p-author" target="_blank">234390216</a>
+</div>
+
+
+<div class="blog_main">
+  <div class="blog_title">
+    <h3>
+      <a href="/blog/1893038">Spring整合JMS(一)——基于ActiveMQ实现</a>
+      <em class="actions">      </em>
+    </h3>
+    <ul class='blog_categories'><strong>博客分类：</strong> <li><a href="/category/156657">Spring</a></li> </ul>
+        <div class='news_tag'><a href="http://www.iteye.com/blogs/tag/Spring">Spring</a><a href="http://www.iteye.com/blogs/tag/JMS">JMS</a><a href="http://www.iteye.com/blogs/tag/%E6%95%B4%E5%90%88">整合</a><a href="http://www.iteye.com/blogs/tag/integrate">integrate</a><a href="http://www.iteye.com/blogs/tag/ActiveMQ">ActiveMQ</a>&nbsp;</div>
+  </div>
+
+  <div id="blog_content" class="blog_content">
+    <div class="iteye-blog-content-contain" style="font-size: 14px;">
+<p class="iteye-blog-content-contain" style="font-size: 14px;"> </p>
+<p class="iteye-blog-content-contain" style="font-size: 14px;"> </p>
+<h2 class="iteye-blog-content-contain" style="margin: 13pt 0cm 13pt 28.8pt;">
+<a name="_Toc359768035"></a><span style="color: #000000;"><span><span><span style="font-size: x-large; font-family: Cambria;">1.1</span><span style="">     </span></span></span><span><span style="font-size: x-large; font-family: Cambria;">JMS</span></span></span><span style="font-size: x-large;"><span><span style="font-family: 宋体;">简介</span></span></span>
+</h2>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span style="font-family: Calibri;"><span>       </span>JMS</span></span><span style="font-family: 宋体;">的全称是</span><span><span style="font-family: Calibri;">Java Message Service</span></span><span style="font-family: 宋体;">，即</span><span><span style="font-family: Calibri;">Java</span></span><span style="font-family: 宋体;">消息服务。它主要用于在生产者和消费者之间进行消息传递，生产者负责产生消息，而消费者负责接收消息。把它应用到实际的业务需求中的话我们可以在特定的时候利用生产者生成一消息，并进行发送，对应的消费者在接收到对应的消息后去完成对应的业务逻辑。对于消息的传递有两种类型，一种是点对点的，即一个生产者和一个消费者一一对应；另一种是发布</span><span><span style="font-family: Calibri;">/</span></span><span style="font-family: 宋体;">订阅模式，即一个生产者产生消息并进行发送后，可以由多个消费者进行接收。</span></span></p>
+<h2 class="iteye-blog-content-contain" style="margin: 13pt 0cm 13pt 28.8pt;">
+<a name="_Toc359768036"></a><span style="color: #000000;"><span><span><span style="font-size: x-large; font-family: Cambria;">1.2</span><span style="">     </span></span></span><span><span style="font-size: x-large; font-family: Cambria;">Spring</span></span></span><span style="font-size: x-large;"><span><span style="font-family: 宋体;">整合</span><span><span style="font-family: Cambria;">JMS</span></span></span></span>
+</h2>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">对</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">做了一个简要介绍之后，接下来就讲一下</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">整合</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">的具体过程。</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">只是一个标准，真正在使用它的时候我们需要有它的具体实现，这里我们就使用</span><span><span style="font-family: Calibri;">Apache</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">activeMQ</span></span><span style="font-family: 宋体;">来作为它的实现。所使用的依赖利用</span><span><span style="font-family: Calibri;">Maven</span></span><span style="font-family: 宋体;">来进行管理，具体依赖如下：</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"> </p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="xml" name="code">&lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.10&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+            &lt;version&gt;${spring-version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-jms&lt;/artifactId&gt;
+            &lt;version&gt;${spring-version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
+            &lt;version&gt;${spring-version}&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.annotation&lt;/groupId&gt;
+            &lt;artifactId&gt;jsr250-api&lt;/artifactId&gt;
+            &lt;version&gt;1.0&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.activemq&lt;/groupId&gt;
+            &lt;artifactId&gt;activemq-core&lt;/artifactId&gt;
+            &lt;version&gt;5.7.0&lt;/version&gt;
+        &lt;/dependency&gt;
+&lt;/dependencies&gt;
+
+</pre>
+</div>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"> </p>
+<h3 class="iteye-blog-content-contain" style="margin: 13pt 0cm 13pt 36pt;">
+<a name="_Toc359768037"></a>1.2.1<span style="">  </span>activeMQ准备</h3>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">既然是使用的</span><span><span style="font-family: Calibri;">apache</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">activeMQ</span></span><span style="font-family: 宋体;">作为</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">的实现，那么首先我们应该到</span><span><span style="font-family: Calibri;">apache</span></span><span style="font-family: 宋体;">官网上下载</span><span><span style="font-family: Calibri;">activeMQ</span></span><span style="font-family: 宋体;">（</span><span><a href="http://activemq.apache.org/download.html"><span style="text-decoration: underline;"><span style="font-family: Calibri; color: #0000ff;">http://activemq.apache.org/download.html</span></span></a></span><span style="font-family: 宋体;">），进行解压后运行其</span><span><span style="font-family: Calibri;">bin</span></span><span style="font-family: 宋体;">目录下面的</span><span><span style="font-family: Calibri;">activemq.bat</span></span><span style="font-family: 宋体;">文件启动</span><span><span style="font-family: Calibri;">activeMQ</span></span><span style="font-family: 宋体;">。</span></span></p>
+<h3 class="iteye-blog-content-contain" style="margin: 13pt 0cm 13pt 36pt;">
+<a name="_Toc359768038"></a>1.2.2配置ConnectionFactory</h3>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span style="font-family: Calibri;"><span>       </span>ConnectionFactory</span></span><span style="font-family: 宋体;">是用于产生到</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">服务器的链接的，</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">为我们提供了多个</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">，有</span><span><span style="font-family: Calibri;">SingleConnectionFactory</span></span><span style="font-family: 宋体;">和</span><span><span style="font-family: Calibri;">CachingConnectionFactory</span></span><span style="font-family: 宋体;">。</span><span><span style="font-family: Calibri;">SingleConnectionFactory</span></span><span style="font-family: 宋体;">对于建立</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">服务器链接的请求会一直返回同一个链接，并且会忽略</span><span><span style="font-family: Calibri;">Connection</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">close</span></span><span style="font-family: 宋体;">方法调用。</span><span><span style="font-family: Calibri;">CachingConnectionFactory</span></span><span style="font-family: 宋体;">继承了</span><span><span style="font-family: Calibri;">SingleConnectionFactory</span></span><span style="font-family: 宋体;">，所以它拥有</span><span><span style="font-family: Calibri;">SingleConnectionFactory</span></span><span style="font-family: 宋体;">的所有功能，同时它还新增了缓存功能，它可以缓存</span><span><span style="font-family: Calibri;">Session</span></span><span style="font-family: 宋体;">、</span><span><span style="font-family: Calibri;">MessageProducer</span></span><span style="font-family: 宋体;">和</span><span><span style="font-family: Calibri;">MessageConsumer</span></span><span style="font-family: 宋体;">。这里我们使用</span><span><span style="font-family: Calibri;">SingleConnectionFactory</span></span><span style="font-family: 宋体;">来作为示例。</span></span></p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="xml" name="code">&lt;bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory"/&gt;</pre>
+</div>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"> </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">这样就定义好产生</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">服务器链接的</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">了吗？答案是非也。</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">提供的</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">只是</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">用于管理</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">的，真正产生到</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">服务器链接的</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">还得是由</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">服务厂商提供，并且需要把它注入到</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">提供的</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">中。我们这里使用的是</span><span><span style="font-family: Calibri;">ActiveMQ</span></span><span style="font-family: 宋体;">实现的</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">，所以在我们这里真正的可以产生</span><span><span style="font-family: Calibri;">Connection</span></span><span style="font-family: 宋体;">的就应该是由</span><span><span style="font-family: Calibri;">ActiveMQ</span></span><span style="font-family: 宋体;">提供的</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">。所以定义一个</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">的完整代码应该如下所示：</span></span></p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="xml" name="code">    &lt;!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供--&gt;
+    &lt;bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"&gt;
+        &lt;property name="brokerURL" value="tcp://localhost:61616"/&gt;
+    &lt;/bean&gt;
+    
+    &lt;!-- Spring用于管理真正的ConnectionFactory的ConnectionFactory --&gt;
+    &lt;bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory"&gt;
+        &lt;!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory --&gt;
+        &lt;property name="targetConnectionFactory" ref="targetConnectionFactory"/&gt;
+    &lt;/bean&gt;
+
+</pre>
+</div>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;">  </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span style="font-family: Calibri;"><span>       </span>ActiveMQ</span></span><span style="font-family: 宋体;">为我们提供了一个</span><span><span style="font-family: Calibri;">PooledConnectionFactory</span></span><span style="font-family: 宋体;">，通过往里面注入一个</span><span><span style="font-family: Calibri;">ActiveMQConnectionFactory</span></span><span style="font-family: 宋体;">可以用来将</span><span><span style="font-family: Calibri;">Connection</span></span><span style="font-family: 宋体;">、</span><span><span style="font-family: Calibri;">Session</span></span><span style="font-family: 宋体;">和</span><span><span style="font-family: Calibri;">MessageProducer</span></span><span style="font-family: 宋体;">池化，这样可以大大的减少我们的资源消耗。当使用</span><span><span style="font-family: Calibri;">PooledConnectionFactory</span></span><span style="font-family: 宋体;">时，我们在定义一个</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">时应该是如下定义：</span></span></p>
+<p class="iteye-blog-content-contain" style="font-size: 14px;"> </p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="xml" name="code">    &lt;!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供--&gt;
+    &lt;bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"&gt;
+        &lt;property name="brokerURL" value="tcp://localhost:61616"/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"&gt;
+        &lt;property name="connectionFactory" ref="targetConnectionFactory"/&gt;
+        &lt;property name="maxConnections" value="10"/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory"&gt;
+        &lt;property name="targetConnectionFactory" ref="pooledConnectionFactory"/&gt;
+    &lt;/bean&gt;</pre>
+</div>
+<h3 class="iteye-blog-content-contain" style="margin: 13pt 0cm 13pt 36pt;">
+<a name="_Toc359768039"></a>1.2.3配置生产者</h3>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt; text-indent: 21pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">配置好</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">之后我们就需要配置生产者。生产者负责产生消息并发送到</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">服务器，这通常对应的是我们的一个业务逻辑服务实现类。但是我们的服务实现类是怎么进行消息的发送的呢？这通常是利用</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">为我们提供的</span><span><span style="font-family: Calibri;">JmsTemplate</span></span><span style="font-family: 宋体;">类来实现的，所以配置生产者其实最核心的就是配置进行消息发送的</span><span><span style="font-family: Calibri;">JmsTemplate</span></span><span style="font-family: 宋体;">。对于消息发送者而言，它在发送消息的时候要知道自己该往哪里发，为此，我们在定义</span><span><span style="font-family: Calibri;">JmsTemplate</span></span><span style="font-family: 宋体;">的时候需要往里面注入一个</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">提供的</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">对象。</span></span></p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="xml" name="code">    &lt;!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 --&gt;
+    &lt;bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate"&gt;
+        &lt;!-- 这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象 --&gt;
+        &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
+    &lt;/bean&gt;
+</pre>
+</div>
+<p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">在真正利用</span><span><span style="font-family: Calibri;">JmsTemplate</span></span><span style="font-family: 宋体;">进行消息发送的时候，我们需要知道消息发送的目的地，即</span><span><span style="font-family: Calibri;">destination</span></span><span style="font-family: 宋体;">。在</span><span><span style="font-family: Calibri;">Jms</span></span><span style="font-family: 宋体;">中有一个用来表示目的地的</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">接口，它里面没有任何方法定义，只是用来做一个标识而已。当我们在使用</span><span><span style="font-family: Calibri;">JmsTemplate</span></span><span style="font-family: 宋体;">进行消息发送时没有指定</span><span><span style="font-family: Calibri;">destination</span></span><span style="font-family: 宋体;">的时候将使用默认的</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">。默认</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">可以通过在定义</span><span><span style="font-family: Calibri;">jmsTemplate bean</span></span><span style="font-family: 宋体;">对象时通过属性</span><span><span style="font-family: Calibri;">defaultDestination</span></span><span style="font-family: 宋体;">或</span><span><span style="font-family: Calibri;">defaultDestinationName</span></span><span style="font-family: 宋体;">来进行注入，</span><span><span style="font-family: Calibri;">defaultDestinationName</span></span><span style="font-family: 宋体;">对应的就是一个普通字符串。在</span><span><span style="font-family: Calibri;">ActiveMQ</span></span><span style="font-family: 宋体;">中实现了两种类型的</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">，一个是点对点的</span><span><span style="font-family: Calibri;">ActiveMQQueue</span></span><span style="font-family: 宋体;">，另一个就是支持订阅</span><span><span style="font-family: Calibri;">/</span></span><span style="font-family: 宋体;">发布模式的</span><span><span style="font-family: Calibri;">ActiveMQTopic</span></span><span style="font-family: 宋体;">。在定义这两种类型的</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">时我们都可以通过一个</span><span><span style="font-family: Calibri;">name</span></span><span style="font-family: 宋体;">属性来进行构造，如：</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"> </p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="xml" name="code">    &lt;!--这个是队列目的地，点对点的--&gt;
+    &lt;bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue"&gt;
+        &lt;constructor-arg&gt;
+            &lt;value&gt;queue&lt;/value&gt;
+        &lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;!--这个是主题目的地，一对多的--&gt;
+    &lt;bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic"&gt;
+        &lt;constructor-arg value="topic"/&gt;
+    &lt;/bean&gt;
+</pre>
+</div>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">假设我们定义了一个</span><span><span style="font-family: Calibri;">ProducerService</span></span><span style="font-family: 宋体;">，里面有一个向</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">发送纯文本消息的方法</span><span><span style="font-family: Calibri;">sendMessage</span></span><span style="font-family: 宋体;">，那么我们的代码就大概是这个样子：</span></span></p>
+<p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="java" name="code">package com.tiantian.springintejms.service.impl;
+ 
+import javax.annotation.Resource;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+ 
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
+ 
+import com.tiantian.springintejms.service.ProducerService;
+ 
+@Component
+public class ProducerServiceImpl implements ProducerService {
+ 
+    private JmsTemplate jmsTemplate;
+    
+    public void sendMessage(Destination destination, final String message) {
+        System.out.println("---------------生产者发送消息-----------------");
+        System.out.println("---------------生产者发了一个消息：" + message);
+        jmsTemplate.send(destination, new MessageCreator() {
+            public Message createMessage(Session session) throws JMSException {
+                return session.createTextMessage(message);
+            }
+        });
+    } 
+
+    public JmsTemplate getJmsTemplate() {
+        returnjmsTemplate;
+    } 
+
+    @Resource
+    public void setJmsTemplate(JmsTemplate jmsTemplate) {
+        this.jmsTemplate = jmsTemplate;
+    }
+ 
+}
+</pre>
+</div>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">我们可以看到在</span><span><span style="font-family: Calibri;">sendMessage</span></span><span style="font-family: 宋体;">方法体里面我们是通过</span><span><span style="font-family: Calibri;">jmsTemplate</span></span><span style="font-family: 宋体;">来发送消息到对应的</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">的。到此，我们生成一个简单的文本消息并把它发送到指定目的地</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">的生产者就配置好了。</span></span></p>
+<h3 class="iteye-blog-content-contain" style="margin: 13pt 0cm 13pt 36pt;">
+<a name="_Toc359768040"></a>1.2.4配置消费者</h3>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt; text-indent: 21pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">生产者往指定目的地</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">发送消息后，接下来就是消费者对指定目的地的消息进行消费了。那么消费者是如何知道有生产者发送消息到指定目的地</span><span><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体;">了呢？这是通过</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">为我们封装的消息监听容器</span><span><span style="font-family: Calibri;">MessageListenerContainer</span></span><span style="font-family: 宋体;">实现的，它负责接收信息，并把接收到的信息分发给真正的</span><span><span style="font-family: Calibri;">MessageListener</span></span><span style="font-family: 宋体;">进行处理。每个消费者对应每个目的地都需要有对应的</span><span><span style="font-family: Calibri;">MessageListenerContainer</span></span><span style="font-family: 宋体;">。对于消息监听容器而言，除了要知道监听哪个目的地之外，还需要知道到哪里去监听，也就是说它还需要知道去监听哪个</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">服务器，这是通过在配置</span><span><span style="font-family: Calibri;">MessageConnectionFactory</span></span><span style="font-family: 宋体;">的时候往里面注入一个</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">来实现的。所以我们<span style="color: red;">在配置一个</span></span><span style="color: red;"><span style="font-family: Calibri;">MessageListenerContainer</span></span><span style="font-family: 宋体; color: red;">的时候有三个属性必须指定，一个是表示从哪里监听的</span><span style="color: red;"><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体; color: red;">；一个是表示监听什么的</span><span style="color: red;"><span style="font-family: Calibri;">Destination</span></span><span style="font-family: 宋体; color: red;">；一个是接收到消息以后进行消息处理的</span><span style="color: red;"><span style="font-family: Calibri;">MessageListener</span></span><span style="font-family: 宋体;">。</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">一共为我们提供了两种类型的</span><span><span style="font-family: Calibri;">MessageListenerContainer</span></span><span style="font-family: 宋体;">，</span><span><span style="font-family: Calibri;">SimpleMessageListenerContainer</span></span><span style="font-family: 宋体;">和</span><span><span style="font-family: Calibri;">DefaultMessageListenerContainer</span></span><span style="font-family: 宋体;">。</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt; text-indent: 21pt;"><span style="font-size: medium;"><span><span style="font-family: Calibri;">SimpleMessageListenerContainer</span></span><span style="font-family: 宋体;">会在一开始的时候就创建一个会话</span><span><span style="font-family: Calibri;">session</span></span><span style="font-family: 宋体;">和消费者</span><span><span style="font-family: Calibri;">Consumer</span></span><span style="font-family: 宋体;">，并且会使用标准的</span><span><span style="font-family: Calibri;">JMS MessageConsumer.setMessageListener()</span></span><span style="font-family: 宋体;">方法注册监听器让</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">提供者调用监听器的回调函数。它不会动态的适应运行时需要和参与外部的事务管理。兼容性方面，它非常接近于独立的</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">规范，但一般不兼容</span><span><span style="font-family: Calibri;">Java EE</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">限制。</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt; text-indent: 21pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">大多数情况下我们还是使用的</span><span><span style="font-family: Calibri;">DefaultMessageListenerContainer</span></span><span style="font-family: 宋体;">，跟</span><span><span style="font-family: Calibri;">SimpleMessageListenerContainer</span></span><span style="font-family: 宋体;">相比，</span><span><span style="font-family: Calibri;">DefaultMessageListenerContainer</span></span><span style="font-family: 宋体;">会动态的适应运行时需要，并且能够参与外部的事务管理。它很好的平衡了对</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">提供者要求低、先进功能如事务参与和兼容</span><span><span style="font-family: Calibri;">Java EE</span></span><span style="font-family: 宋体;">环境。</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><strong><span style="font-size: 14pt; font-family: 宋体;">定义处理消息的</span></strong><strong><span style="font-size: 14pt;"><span style="font-family: Calibri;">MessageListener</span></span></strong></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">要定义处理消息的</span><span><span style="font-family: Calibri;">MessageListener</span></span><span style="font-family: 宋体;">我们只需要实现</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">规范中的</span><span><span style="font-family: Calibri;">MessageListener</span></span><span style="font-family: 宋体;">接口就可以了。</span><span><span style="font-family: Calibri;">MessageListener</span></span><span style="font-family: 宋体;">接口中只有一个方法</span><span><span style="font-family: Calibri;">onMessage</span></span><span style="font-family: 宋体;">方法，当接收到消息的时候会自动调用该方法。</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"> </p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="java" name="code">package com.tiantian.springintejms.listener;
+ 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+ 
+public class ConsumerMessageListener implements MessageListener {
+ 
+    public void onMessage(Message message) {
+        //这里我们知道生产者发送的就是一个纯文本消息，所以这里可以直接进行强制转换
+        TextMessage textMsg = (TextMessage) message;
+        System.out.println("接收到一个纯文本消息。");
+        try {
+            System.out.println("消息内容是：" + textMsg.getText());
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+ 
+}</pre>
+</div>
+<p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">有了</span><span><span style="font-family: Calibri;">MessageListener</span></span><span style="font-family: 宋体;">之后我们就可以在</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">的配置文件中配置一个消息监听容器了。</span></span></p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="xml" name="code">    &lt;!--这个是队列目的地--&gt;
+    &lt;bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue"&gt;
+        &lt;constructor-arg&gt;
+            &lt;value&gt;queue&lt;/value&gt;
+        &lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;!-- 消息监听器 --&gt;
+    &lt;bean id="consumerMessageListener" class="com.tiantian.springintejms.listener.ConsumerMessageListener"/&gt;    
+
+    &lt;!-- 消息监听容器 --&gt;
+    &lt;bean id="jmsContainer"        class="org.springframework.jms.listener.DefaultMessageListenerContainer"&gt;
+        &lt;property name="connectionFactory" ref="connectionFactory" /&gt;
+        &lt;property name="destination" ref="queueDestination" /&gt;
+        &lt;property name="messageListener" ref="consumerMessageListener" /&gt;
+    &lt;/bean&gt;
+</pre>
+</div>
+<p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;">  </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">我们可以看到我们定义了一个名叫</span><span><span style="font-family: Calibri;">queue</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">ActiveMQQueue</span></span><span style="font-family: 宋体;">目的地，我们的监听器就是监听了发送到这个目的地的消息。</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">至此我们的生成者和消费者都配置完成了，这也就意味着我们的整合已经完成了。这个时候完整的</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">的配置文件应该是这样的：</span></span></p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="xml" name="code">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jms="http://www.springframework.org/schema/jms"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd"&gt;
+ 
+    &lt;context:component-scan base-package="com.tiantian" /&gt;
+ 
+    &lt;!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 --&gt;
+    &lt;bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate"&gt;
+        &lt;!-- 这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象 --&gt;
+        &lt;property name="connectionFactory" ref="connectionFactory"/&gt;
+    &lt;/bean&gt;
+    
+    &lt;!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供--&gt;
+    &lt;bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"&gt;
+        &lt;property name="brokerURL" value="tcp://localhost:61616"/&gt;
+    &lt;/bean&gt;
+    
+    &lt;!-- Spring用于管理真正的ConnectionFactory的ConnectionFactory --&gt;
+    &lt;bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory"&gt;
+        &lt;!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory --&gt;
+        &lt;property name="targetConnectionFactory" ref="targetConnectionFactory"/&gt;
+    &lt;/bean&gt;
+    
+    &lt;!--这个是队列目的地--&gt;
+    &lt;bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue"&gt;
+        &lt;constructor-arg&gt;
+            &lt;value&gt;queue&lt;/value&gt;
+        &lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+    &lt;!-- 消息监听器 --&gt;
+    &lt;bean id="consumerMessageListener" class="com.tiantian.springintejms.listener.ConsumerMessageListener"/&gt;
+    &lt;!-- 消息监听容器 --&gt;
+    &lt;bean id="jmsContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer"&gt;
+        &lt;property name="connectionFactory" ref="connectionFactory" /&gt;
+        &lt;property name="destination" ref="queueDestination" /&gt;
+        &lt;property name="messageListener" ref="consumerMessageListener" /&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+</pre>
+</div>
+<p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"> </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">接着我们来测试一下，看看我们的整合是否真的成功了，测试代码如下：</span></span></p>
+<p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<pre class="java" name="code">package com.tiantian.springintejms.test;
+ 
+import javax.jms.Destination;
+ 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import com.tiantian.springintejms.service.ProducerService;
+ 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("/applicationContext.xml")
+public class ProducerConsumerTest {
+ 
+    @Autowired
+    private ProducerService producerService;
+    @Autowired
+    @Qualifier("queueDestination")
+    private Destination destination;
+    
+    @Test
+    public void testSend() {
+        for (int i=0; i&lt;2; i++) {
+            producerService.sendMessage(destination, "你好，生产者！这是消息：" + (i+1));
+        }
+    }
+    
+}
+</pre>
+</div>
+<p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">在上面的测试代码中我们利用生产者发送了两个消息，正常来说，消费者应该可以接收到这两个消息。运行测试代码后控制台输出如下：</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"> <br><img src="http://dl2.iteye.com/upload/attachment/0086/1032/bc449d33-84f8-3742-bca5-0251132e810f.png" alt=""><br> </p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">看，控制台已经进行了正确的输出，这说明我们的整合确实是已经成功了。</span></span></p>
+<p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span><span style="font-size: medium; font-family: Calibri;"> </span></span></p>
+<p class="iteye-blog-content-contain" style="font-size: 14px;"><span style="color: #ff9900;"><strong><span style="font-size: 18px;"> 附：</span></strong></span></p>
+<ul>
+<li>
+<div class="iteye-blog-content-contain" style="font-size: 14px;"><a href="/blog/1893676" target="_blank">Spring整合JMS（二）——消息监听器</a></div>
+</li>
+<li>
+<div class="iteye-blog-content-contain" style="font-size: 14px;"><a href="/blog/1900937" title="Spring整合JMS（三）——MessageConverter介绍" target="_blank">Spring整合JMS（三）——MessageConverter介绍</a></div>
+</li>
+</ul>
+<div class="iteye-blog-content-contain" style="font-size: 14px;">
+<ul>
+<li> <a href="/blog/1983532" target="_self">Spring整合JMS（四）——事务管理</a>
+</li>
+</ul>
+</div>
+</div>
+  </div>
+
+  
+  <div class="attachments">
+    
+      
+        <ul style="display:none;">
+          <li><a href="http://dl2.iteye.com/upload/attachment/0086/1032/bc449d33-84f8-3742-bca5-0251132e810f.png" target="_blank"><img src='http://dl2.iteye.com/upload/attachment/0086/1032/bc449d33-84f8-3742-bca5-0251132e810f-thumb.png' class='magplus' title='点击查看原始大小图片' /></a></li>
+          
+          <li>大小: 5 KB</li>
+        </ul>
+      
+    
+      
+        <ul>
+          <li><a href="http://dl.iteye.com/topics/download/a3f9e775-db87-3cb2-9467-e7045a3be2a7">SpringInteJMS_项目源码_.zip</a> (70.2 KB)</li>
+          
+          <li>下载次数: 1553</li>
+        </ul>
+      
+    
+    
+      <ul>
+        <li><a href="#" onclick="$$('div.attachments ul').invoke('show');$(this).up(1).hide();return false;">查看图片附件</a></li>
+      </ul>
+    
+  </div>
+
+
+  
+  
+  <IFRAME SRC="/iframe_ggbd/187" SCROLLING=no WIDTH=468 HEIGHT=60 FRAMEBORDER=0></IFRAME>
+  
+  <div id="bottoms" class="clearfix">
+    <div id="digg_bottom" class="clearfix"><div class='digged'><strong>36</strong> <br/>顶</div><div class='digged'><strong>6</strong> <br/>踩</div></div>
+    <div id="share_weibo">分享到：
+      <a data-type='sina' href="javascript:;" title="分享到新浪微博"><img src="/images/sina.jpg"></a>
+      <a data-type='qq' href="javascript:;" title="分享到腾讯微博"><img src="/images/tec.jpg"></a>
+    </div>
+  </div>
+
+  <div class="blog_nav">
+    <div class="pre_next">
+      <a href="/blog/1893676" class="next" title="Spring整合JMS(二)——三种消息监听器">Spring整合JMS(二)——三种消息监听器</a>
+      |
+      <a href="/blog/1869488" class="pre" title="Spring整合Hessian访问远程服务">Spring整合Hessian访问远程服务</a>
+    </div>
+  </div>
+  <div class="blog_bottom">
+    <ul>
+      <li>2013-06-23 17:15</li>
+      <li>浏览 39045</li>
+      <li><a href="#comments">评论(40)</a></li>
+      
+      
+      <li>分类:<a href="http://www.iteye.com/blogs/category/opensource">开源软件</a></li>      
+      <li class='last'><a href="http://www.iteye.com/wiki/blog/1893038" target="_blank" class="more">相关推荐</a></li>
+    </ul>
+  </div>
+
+  <div class="blog_comment">
+    <h5>评论</h5>
+    <a id="comments" name="comments"></a>
+    <div id="bc2376806">
+  <div class="comment_title">
+    40 楼
+    <a href='http://siyuepiaoliu.iteye.com' target='_blank' title='siyuepiaoliu'>siyuepiaoliu</a>
+    2015-08-19&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">按照楼主所写，我发了第一条消息后，第二条没有发送成功。报如下错误<br />Transport Connection to: tcp://127.0.0.1:57964 failed: java.n<br />et.SocketException: Connection reset<br />请问各位是啥原因，网上没找到解决方法</div>
+</div>
+
+<div id="bc2375573">
+  <div class="comment_title">
+    39 楼
+    <a href='http://grefr.iteye.com' target='_blank' title='grefr'>grefr</a>
+    2015-07-27&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">楼主写的不错，关于jms和activemq的原理性的介绍，可以看看这个文章<br /><a rel="nofollow" href="http://blog.yemou.net/article/query/info/tytfjhfascvhzxcyt127" target="_blank">http://blog.yemou.net/article/query/info/tytfjhfascvhzxcyt127</a></div>
+</div>
+
+<div id="bc2373053">
+  <div class="comment_title">
+    38 楼
+    <a href='http://qq-28108539.iteye.com' target='_blank' title='qq_28108539'>qq_28108539</a>
+    2015-06-05&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">如果把spring JMS整合的，并加上activemq的话一定要使用监听器吗？监听器的作用又是什么呢？</div>
+</div>
+
+<div id="bc2368554">
+  <div class="comment_title">
+    37 楼
+    <a href='http://201311162547.iteye.com' target='_blank' title='the_small_base_'>the_small_base_</a>
+    2015-03-10&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">是不是少了很多jar文件了，我加入好几个spring的文件才可以运行</div>
+</div>
+
+<div id="bc2366541">
+  <div class="comment_title">
+    36 楼
+    <a href='http://201305161144.iteye.com' target='_blank' title='joker_xu'>joker_xu</a>
+    2015-01-17&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">您好:<br />按照上述配置完毕之后,<br />提示org.springframework.jms.core.JmsTemplate没有指定defaultDestinationName,于是把queueDestition给它指定.<br />指定完毕之后,可以发送消息,但是接收不到消息.<br />我的spring版本3.2.9.<br />从网上百度了下,说是消息监听容器需要添加<br /> &lt;property name="pubSubDomain" value="false"/&gt;<br />&lt;property name="pubSubNoLocal" value="false"/&gt;<br /><br />但是仍然接收不到信息...<br />请教下,这个是什么问题<img src="/images/smiles/icon_cry.gif" />&nbsp;<img src="/images/smiles/icon_cry.gif" />&nbsp;<img src="/images/smiles/icon_cry.gif" /> ?? 非常感谢!!!</div>
+</div>
+
+<div id="bc2365253">
+  <div class="comment_title">
+    35 楼
+    <a href='http://robingdo.iteye.com' target='_blank' title='robingdo'>robingdo</a>
+    2014-12-25&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">写的很好，以后温习，谢谢！</div>
+</div>
+
+<div id="bc2362810">
+  <div class="comment_title">
+    34 楼
+    <a href='http://flrldeye.iteye.com' target='_blank' title='flrldeye'>flrldeye</a>
+    2014-11-14&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">学习了。真需要这方面的资料。</div>
+</div>
+
+<div id="bc2358596">
+  <div class="comment_title">
+    33 楼
+    <a href='http://javatozhang.iteye.com' target='_blank' title='javatozhang'>javatozhang</a>
+    2014-09-16&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">lz的active mq写的真心不错呀！</div>
+</div>
+
+<div id="bc2356907">
+  <div class="comment_title">
+    32 楼
+    <a href='http://yjjie.iteye.com' target='_blank' title='yjjie'>yjjie</a>
+    2014-08-23&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">我以我的理解实现了 发送者和接收者分离<br />发送者是 一个main入口的程序<br />接收者是 一个web<br />代码运行正常<br />但是 一旦activeMQ 重启，就不正常了！不重启就接收不到信息<br />我想应该是connection 的问题，但是不晓得怎么处理</div>
+</div>
+
+<div id="bc2334384">
+  <div class="comment_title">
+    31 楼
+    <a href='http://jekca.iteye.com' target='_blank' title='c04s31602'>c04s31602</a>
+    2013-12-13&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">楼主写的太好了，我有个疑问请教下：CachingConnectionFactory缓存了Session、MessageProducer和MessageConsumer。ActiveMQConnectionFactory将Connection、Session和MessageProducer池化。如果在这个例子中用CachingConnectionFactory替代SingleConnectionFactory，那么Session、MessageProducer用的是缓存中的呢还是池中的？</div>
+</div>
+
+<div id="bc2321061">
+  <div class="comment_title">
+    30 楼
+    <a href='http://hzxlb910.iteye.com' target='_blank' title='hzxlb910'>hzxlb910</a>
+    2013-08-02&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">还是连载哎，不错，关注了。把代码下回去，好好学习，谢谢。</div>
+</div>
+
+<div id="bc2317704">
+  <div class="comment_title">
+    29 楼
+    <a href='http://haohaoxuexi.iteye.com' target='_blank' title='234390216'>234390216</a>
+    2013-07-07&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content"><div class="quote_title">aa1asdasd 写道</div><div class="quote_div"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">aa1asdasd 写道</div><div class="quote_div">MQ控制太输出<br /><br />java.lang.IllegalStateException: Cannot remove session from connection that had not been registered: ID:user-PC-61504-13<br />72256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveSession(TransportConnection.java:678)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:74)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Async error occurred: java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not b<br />een registered: ID:user-PC-61504-1372256221562-1:1<br />java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not been registered: ID:user-PC-615<br />04-1372256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveConsumer(TransportConnection.java:637)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:76)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Transport Connection to: tcp://127.0.0.1:61505 failed: java.net.SocketException: Software caused connection abor<br />t: recv failed</div><br />我回头研究一下。</div><br />请问你的这个异常是在什么情况下出现的呢？我这里测试一直没有出现这个问题。</div><br />我之前在weblogic上运行是没有这个问题的，单独使用junit进行测试时出现了该问题，这就是一个警告信息“ WARN | Async error occurred: java.lang.IllegalStateException: Cannot remove ses<br />sion from connection that had not been registered”，对系统不会有影响。从提示信息来看，说的是不能从connection移除一个没有注册过的session，那就很好理解了，在单元测试运行时建立有对应的connection和session，运行完之后当前应用就执行完了，connection也关闭了，但是这个时候原先的session没有关闭，导致第二次运行时在新建立的connection中尝试移除之前的session失败，出现上述异步错误。这个问题在web环境下貌似是不会出现的。（至少我使用weblogic时没有出现）</div><br /><br />我用的是apache-activemq-5.8.0</div><br />这个跟版本应该没有什么关系，根据activeMQ官方的说法，在进行单元测试的时候比较容易出现各种各样的问题，估计上述问题就是其中之一。找到一个解决办法就是把ActiveMQConnectionFactory再用PooledConnectionFactory封装一下，进行池化处理。代码如下：<br /><pre class="xml" name="code">
+
+	&lt;bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"&gt;
+		&lt;property name="brokerURL" value="tcp://localhost:61616"/&gt;
+	&lt;/bean&gt;
+	
+	&lt;bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"&gt;
+		&lt;property name="connectionFactory" ref="targetConnectionFactory"/&gt;
+		&lt;property name="maxConnections" value="10"/&gt;
+	&lt;/bean&gt;
+	
+	&lt;bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory"&gt;
+		&lt;property name="targetConnectionFactory" ref="pooledConnectionFactory"/&gt;
+	&lt;/bean&gt;
+</pre><br />这样在操作多次之后ActiveMQ就不会再抛不能移除session之类的警告异常信息了。使用上述代码改造之后ActiveMQ控制台会输出 INFO | Transport failed: java.net.SocketException: Connection reset这样的信息，这个对于消息的发送和接收也是没有影响的。</div>
+</div>
+
+<div id="bc2317688">
+  <div class="comment_title">
+    28 楼
+    <a href='http://aa1asdasd.iteye.com' target='_blank' title='aa1asdasd'>aa1asdasd</a>
+    2013-07-07&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">aa1asdasd 写道</div><div class="quote_div">MQ控制太输出<br /><br />java.lang.IllegalStateException: Cannot remove session from connection that had not been registered: ID:user-PC-61504-13<br />72256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveSession(TransportConnection.java:678)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:74)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Async error occurred: java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not b<br />een registered: ID:user-PC-61504-1372256221562-1:1<br />java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not been registered: ID:user-PC-615<br />04-1372256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveConsumer(TransportConnection.java:637)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:76)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Transport Connection to: tcp://127.0.0.1:61505 failed: java.net.SocketException: Software caused connection abor<br />t: recv failed</div><br />我回头研究一下。</div><br />请问你的这个异常是在什么情况下出现的呢？我这里测试一直没有出现这个问题。</div><br />我之前在weblogic上运行是没有这个问题的，单独使用junit进行测试时出现了该问题，这就是一个警告信息“ WARN | Async error occurred: java.lang.IllegalStateException: Cannot remove ses<br />sion from connection that had not been registered”，对系统不会有影响。从提示信息来看，说的是不能从connection移除一个没有注册过的session，那就很好理解了，在单元测试运行时建立有对应的connection和session，运行完之后当前应用就执行完了，connection也关闭了，但是这个时候原先的session没有关闭，导致第二次运行时在新建立的connection中尝试移除之前的session失败，出现上述异步错误。这个问题在web环境下貌似是不会出现的。（至少我使用weblogic时没有出现）</div><br /><br />我用的是apache-activemq-5.8.0</div>
+</div>
+
+<div id="bc2317652">
+  <div class="comment_title">
+    27 楼
+    <a href='http://haohaoxuexi.iteye.com' target='_blank' title='234390216'>234390216</a>
+    2013-07-06&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">aa1asdasd 写道</div><div class="quote_div">MQ控制太输出<br /><br />java.lang.IllegalStateException: Cannot remove session from connection that had not been registered: ID:user-PC-61504-13<br />72256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveSession(TransportConnection.java:678)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:74)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Async error occurred: java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not b<br />een registered: ID:user-PC-61504-1372256221562-1:1<br />java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not been registered: ID:user-PC-615<br />04-1372256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveConsumer(TransportConnection.java:637)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:76)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Transport Connection to: tcp://127.0.0.1:61505 failed: java.net.SocketException: Software caused connection abor<br />t: recv failed</div><br />我回头研究一下。</div><br />请问你的这个异常是在什么情况下出现的呢？我这里测试一直没有出现这个问题。</div><br />我之前在weblogic上运行是没有这个问题的，单独使用junit进行测试时出现了该问题，这就是一个警告信息“ WARN | Async error occurred: java.lang.IllegalStateException: Cannot remove ses<br />sion from connection that had not been registered”，对系统不会有影响。从提示信息来看，说的是不能从connection移除一个没有注册过的session，那就很好理解了，在单元测试运行时建立有对应的connection和session，运行完之后当前应用就执行完了，connection也关闭了，但是这个时候原先的session没有关闭，导致第二次运行时在新建立的connection中尝试移除之前的session失败，出现上述异步错误。这个问题在web环境下貌似是不会出现的。（至少我使用weblogic时没有出现）</div>
+</div>
+
+<div id="bc2317649">
+  <div class="comment_title">
+    26 楼
+    <a href='http://haohaoxuexi.iteye.com' target='_blank' title='234390216'>234390216</a>
+    2013-07-06&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">aa1asdasd 写道</div><div class="quote_div">MQ控制太输出<br /><br />java.lang.IllegalStateException: Cannot remove session from connection that had not been registered: ID:user-PC-61504-13<br />72256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveSession(TransportConnection.java:678)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:74)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Async error occurred: java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not b<br />een registered: ID:user-PC-61504-1372256221562-1:1<br />java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not been registered: ID:user-PC-615<br />04-1372256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveConsumer(TransportConnection.java:637)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:76)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Transport Connection to: tcp://127.0.0.1:61505 failed: java.net.SocketException: Software caused connection abor<br />t: recv failed</div><br />我回头研究一下。</div><br />请问你的这个异常是在什么情况下出现的呢？我这里测试一直没有出现这个问题。</div>
+</div>
+
+<div id="bc2316755">
+  <div class="comment_title">
+    25 楼
+    <a href='http://haohaoxuexi.iteye.com' target='_blank' title='234390216'>234390216</a>
+    2013-06-27&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content"><div class="quote_title">yzsunlight 写道</div><div class="quote_div"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">yzsunlight 写道</div><div class="quote_div">JMS 一般用在哪里，能举个具体的实际例子吗</div><br />JMS就是生产者与消费者模式。消费者负责消费生产者产生的消息。通过JMS可以做后台的异步操作，应用到具体工作中的话，有用它来发内部消息的、发邮件的、发短信的，做大操作时在后台做异步操作的。</div><br />跟task 有什么区别</div><br />你的task一般是定时任务，而这个JMS是在有需要的时候由人工发送消息；另外我们发送的消息可以当做参数，消费者接收到消息之后可以根据消息内容的不同做不同的事情。</div>
+</div>
+
+<div id="bc2316753">
+  <div class="comment_title">
+    24 楼
+    <a href='http://yzsunlight.iteye.com' target='_blank' title='yzsunlight'>yzsunlight</a>
+    2013-06-27&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content"><div class="quote_title">234390216 写道</div><div class="quote_div"><div class="quote_title">yzsunlight 写道</div><div class="quote_div">JMS 一般用在哪里，能举个具体的实际例子吗</div><br />JMS就是生产者与消费者模式。消费者负责消费生产者产生的消息。通过JMS可以做后台的异步操作，应用到具体工作中的话，有用它来发内部消息的、发邮件的、发短信的，做大操作时在后台做异步操作的。</div><br />跟task 有什么区别</div>
+</div>
+
+<div id="bc2316735">
+  <div class="comment_title">
+    23 楼
+    <a href='http://haohaoxuexi.iteye.com' target='_blank' title='234390216'>234390216</a>
+    2013-06-27&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content"><div class="quote_title">yzsunlight 写道</div><div class="quote_div">JMS 一般用在哪里，能举个具体的实际例子吗</div><br />JMS就是生产者与消费者模式。消费者负责消费生产者产生的消息。通过JMS可以做后台的异步操作，应用到具体工作中的话，有用它来发内部消息的、发邮件的、发短信的，做大操作时在后台做异步操作的。</div>
+</div>
+
+<div id="bc2316733">
+  <div class="comment_title">
+    22 楼
+    <a href='http://haohaoxuexi.iteye.com' target='_blank' title='234390216'>234390216</a>
+    2013-06-27&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content"><div class="quote_title">aa1asdasd 写道</div><div class="quote_div">MQ控制太输出<br /><br />java.lang.IllegalStateException: Cannot remove session from connection that had not been registered: ID:user-PC-61504-13<br />72256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveSession(TransportConnection.java:678)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:74)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Async error occurred: java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not b<br />een registered: ID:user-PC-61504-1372256221562-1:1<br />java.lang.IllegalStateException: Cannot remove a consumer from a connection that had not been registered: ID:user-PC-615<br />04-1372256221562-1:1<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.processRemoveConsumer(TransportConnection.java:637)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.command.RemoveInfo.visit(RemoveInfo.java:76)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection.service(TransportConnection.java:329)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.broker.TransportConnection$1.onCommand(TransportConnection.java:184)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.MutexTransport.onCommand(MutexTransport.java:50)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.WireFormatNegotiator.onCommand(WireFormatNegotiator.java:113)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.AbstractInactivityMonitor.onCommand(AbstractInactivityMonitor.java:288)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.TransportSupport.doConsume(TransportSupport.java:83)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:214)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:196)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Thread.java:722)<br /> WARN | Transport Connection to: tcp://127.0.0.1:61505 failed: java.net.SocketException: Software caused connection abor<br />t: recv failed</div><br />我回头研究一下。</div>
+</div>
+
+<div id="bc2316625">
+  <div class="comment_title">
+    21 楼
+    <a href='http://yzsunlight.iteye.com' target='_blank' title='yzsunlight'>yzsunlight</a>
+    2013-06-26&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">JMS 一般用在哪里，能举个具体的实际例子吗</div>
+</div>
+
+
+    
+    <div class="pagination"><span class="disabled prev_page">&laquo; 上一页</span> <span class="current">1</span> <a href="/blog/1893038?page=2#comments" rel="next">2</a> <a href="/blog/1893038?page=2#comments" class="next_page" rel="next">下一页 &raquo;</a></div>
+  </div>
+
+  <div class="blog_comment">
+    <h5>发表评论</h5>
+            <p style="text-align:center; margin-top:30px;margin-bottom:0px;"><a href="/login" style="background-color:white;"> <img src="/images/login_icon.png" style="vertical-align:middle; margin-right: 10px;" /></a><a href="/login">  您还没有登录,请您登录后再发表评论 </a></p>
+      </div>
+</div>
+
+
+<script type="text/javascript">
+  dp.SyntaxHighlighter.HighlightAll('code', true, true);
+
+  $$('#main .blog_content pre[name=code]').each(function(pre, index){ // blog content
+    var post_id = 1893038;
+    var location = window.location;
+    source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+    pre.writeAttribute('codeable_id', post_id);
+    pre.writeAttribute('codeable_type', "Blog");
+    pre.writeAttribute('source_url', source_url);
+    pre.writeAttribute('pre_index', index);
+    pre.writeAttribute('title', 'Spring整合JMS(一)——基于ActiveMQ实现');
+  });
+
+  fix_image_size($$('div.blog_content img'), 700);
+
+  function processComment() {
+    $$('#main .blog_comment > div').each(function(comment){// comment
+      var post_id = comment.id.substr(2);
+      $$("#"+comment.id+" pre[name=code]").each(function(pre, index){
+        var location = window.location;
+        source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+        source_url += "#" + comment.id;
+        pre.writeAttribute('codeable_id', post_id);
+        pre.writeAttribute('codeable_type', "BlogComment");
+        pre.writeAttribute('source_url', source_url);
+        pre.writeAttribute('pre_index', index);
+        pre.writeAttribute('title', 'Spring整合JMS(一)——基于ActiveMQ实现');
+      });
+    });
+  }
+
+  function quote_comment(id) {
+    new Ajax.Request('/editor/quote', {
+      parameters: {'id':id, 'type':'BlogComment'},
+      onSuccess:function(response){editor.bbcode_editor.textarea.insertAfterSelection(response.responseText);
+        Element.scrollTo(editor.bbcode_editor.textarea.element);}
+    });
+  }
+
+  code_favorites_init();
+  processComment();
+  new WeiboShare({share_buttons: $('share_weibo'), img_scope: $('blog_content')});
+</script>
+
+
+
+
+        </div>
+
+        <div id="local">
+          <div class="local_top"></div>
+          <div id="blog_owner">
+  <div id="blog_owner_logo"><a href='http://haohaoxuexi.iteye.com'><img alt="234390216的博客" class="logo" src="http://www.iteye.com/upload/logo/user/566675/392b0b83-7725-374c-a0eb-f9f5b7ab3ddd.jpg?1318215227" title="234390216的博客: 好好学习，天天向上" width="" /></a></div>
+  <div id="blog_owner_name">234390216</div>
+</div>
+
+          <div id="blog_actions">
+            <ul>
+              <li>浏览: 1599871 次</li>
+              <li>性别: <img alt="Icon_minigender_1" src="http://www.iteye.com/images/icon_minigender_1.gif?1324994303" title="男" /></li>
+              <li>来自: 长沙</li>
+              <li><img src='/images/status/offline.gif'/></li>
+              
+            </ul>
+          </div>
+          <div id="user_visits" class="clearfix">
+            <h5>最近访客 <span style='font-weight:normal;font-size:12px;padding-left:30px;'><a href="/blog/user_visits">更多访客&gt;&gt;</a></span></h5>
+            
+              <div class="user_visit">
+                <div class="logo"><a href='http://xul0038.iteye.com' target='_blank'><img alt="xul0038的博客" class="logo" src="http://www.iteye.com/images/user-logo-thumb.gif?1324994303" title="xul0038的博客: " width="48px" /></a></div>
+                <div class="left"><a href='http://xul0038.iteye.com' target='_blank' title='xul0038'>xul0038</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href='http://jacklee408.iteye.com' target='_blank'><img alt="jacklee408的博客" class="logo" src="http://www.iteye.com/images/user-logo-thumb.gif?1324994303" title="jacklee408的博客: fff" width="48px" /></a></div>
+                <div class="left"><a href='http://jacklee408.iteye.com' target='_blank' title='jacklee408'>jacklee408</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href='http://lord-is-layuping.iteye.com' target='_blank'><img alt="lord_is_layuping的博客" class="logo" src="http://www.iteye.com/upload/logo/user/492193/0fe6501c-9b28-382b-8650-a979e11f2d5c-thumb.jpg?1306997394" title="lord_is_layuping的博客: " width="48px" /></a></div>
+                <div class="left"><a href='http://lord-is-layuping.iteye.com' target='_blank' title='lord_is_layuping'>lord_is_layuping</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href='http://zhangxia0x1.iteye.com' target='_blank'><img alt="zhangxia0x1的博客" class="logo" src="http://www.iteye.com/images/user-logo-thumb.gif?1324994303" title="zhangxia0x1的博客: " width="48px" /></a></div>
+                <div class="left"><a href='http://zhangxia0x1.iteye.com' target='_blank' title='zhangxia0x1'>zhangxia0x1</a></div>
+              </div>
+            
+          </div>
+
+          
+            <div>
+              <h5>博客专栏</h5>
+              
+
+  
+  <dl class="series" style="padding-bottom:5px;">
+    <dt>
+      <a href="http://www.iteye.com/blogs/subjects/Oracle168" target="_blank"><img alt="A5ee55b9-a463-3d09-9c78-0c0cf33198cd" src="http://www.iteye.com/upload/logo/blog_wiki/1021345/a5ee55b9-a463-3d09-9c78-0c0cf33198cd.png?1413615322" /></a>
+    </dt>
+    <dd>
+    <a href="http://www.iteye.com/blogs/subjects/Oracle168" target="_blank" title="Oracle基础">Oracle基础</a><br />
+      <span class="visited">浏览量：46916</span>
+    </dd>
+  </dl>
+  
+  <dl class="series" style="padding-bottom:5px;">
+    <dt>
+      <a href="http://www.iteye.com/blogs/subjects/springMVC" target="_blank"><img alt="Ad26f909-6440-35a9-b4e9-9aea825bd38e" src="http://www.iteye.com/upload/logo/blog_wiki/1021360/ad26f909-6440-35a9-b4e9-9aea825bd38e.png?1413616847" /></a>
+    </dt>
+    <dd>
+    <a href="http://www.iteye.com/blogs/subjects/springMVC" target="_blank" title="springMVC介绍">springMVC介绍</a><br />
+      <span class="visited">浏览量：419922</span>
+    </dd>
+  </dl>
+  
+  <dl class="series" style="padding-bottom:5px;">
+    <dt>
+      <a href="http://www.iteye.com/blogs/subjects/mybatis" target="_blank"><img alt="Ce363057-ae4d-3ee1-bb46-e7b51a722a4b" src="http://www.iteye.com/upload/logo/blog_wiki/1021363/ce363057-ae4d-3ee1-bb46-e7b51a722a4b.png?1413617292" /></a>
+    </dt>
+    <dd>
+    <a href="http://www.iteye.com/blogs/subjects/mybatis" target="_blank" title="Mybatis简介">Mybatis简介</a><br />
+      <span class="visited">浏览量：430810</span>
+    </dd>
+  </dl>
+  
+  <dl class="series" style="padding-bottom:5px;">
+    <dt>
+      <a href="http://www.iteye.com/blogs/subjects/springjms" target="_blank"><img alt="Bdeb91ad-cf8a-3fe9-942a-3710073b4000" src="http://www.iteye.com/upload/logo/blog_wiki/1021365/bdeb91ad-cf8a-3fe9-942a-3710073b4000.png?1413617738" /></a>
+    </dt>
+    <dd>
+    <a href="http://www.iteye.com/blogs/subjects/springjms" target="_blank" title="Spring整合JMS">Spring整合JMS</a><br />
+      <span class="visited">浏览量：84704</span>
+    </dd>
+  </dl>
+  
+  <dl class="series" style="padding-bottom:5px;">
+    <dt>
+      <a href="http://www.iteye.com/blogs/subjects/ehcache" target="_blank"><img alt="5cbbde67-7cd5-313c-95c2-4185389601e7" src="http://www.iteye.com/upload/logo/blog_wiki/1021352/5cbbde67-7cd5-313c-95c2-4185389601e7.png?1413616423" /></a>
+    </dt>
+    <dd>
+    <a href="http://www.iteye.com/blogs/subjects/ehcache" target="_blank" title="Ehcache简介">Ehcache简介</a><br />
+      <span class="visited">浏览量：40857</span>
+    </dd>
+  </dl>
+  
+  <dl class="series" style="padding-bottom:5px;">
+    <dt>
+      <a href="http://www.iteye.com/blogs/subjects/cas168" target="_blank"><img alt="Cc1c0708-ccc2-3d20-ba47-d40e04440682" src="http://www.iteye.com/upload/logo/blog_wiki/1030353/cc1c0708-ccc2-3d20-ba47-d40e04440682.png?1415626170" /></a>
+    </dt>
+    <dd>
+    <a href="http://www.iteye.com/blogs/subjects/cas168" target="_blank" title="Cas简介">Cas简介</a><br />
+      <span class="visited">浏览量：15804</span>
+    </dd>
+  </dl>
+  
+  <dl class="series" style="padding-bottom:5px;">
+    <dt>
+      <a href="http://www.iteye.com/blogs/subjects/spring_security" target="_blank"><img alt="51592fc3-854c-34f4-9eff-cb82d993ab3a" src="http://www.iteye.com/upload/logo/blog_wiki/1032924/51592fc3-854c-34f4-9eff-cb82d993ab3a.png?1416233271" /></a>
+    </dt>
+    <dd>
+    <a href="http://www.iteye.com/blogs/subjects/spring_security" target="_blank" title="Spring Security简介">Spring Securi...</a><br />
+      <span class="visited">浏览量：41670</span>
+    </dd>
+  </dl>
+  
+
+
+            </div>
+          
+
+                      <div id="blog_menu">
+              <h5>文章分类</h5>
+              <ul>
+                <li><a href="/">全部博客 (205)</a></li>
+                
+                  <li><a href="/category/164370">配置文件 (2)</a></li>
+                
+                  <li><a href="/category/155097">dwr (2)</a></li>
+                
+                  <li><a href="/category/176065">安全 (1)</a></li>
+                
+                  <li><a href="/category/172948">电子邮件 (3)</a></li>
+                
+                  <li><a href="/category/299032">cxf (3)</a></li>
+                
+                  <li><a href="/category/324785">Cas (9)</a></li>
+                
+                  <li><a href="/category/161765">CKEDITOR (3)</a></li>
+                
+                  <li><a href="/category/319453">ehcache (10)</a></li>
+                
+                  <li><a href="/category/158024">extjs4 (6)</a></li>
+                
+                  <li><a href="/category/159974">freemarker (2)</a></li>
+                
+                  <li><a href="/category/154983">hibernate (5)</a></li>
+                
+                  <li><a href="/category/156571">itext (1)</a></li>
+                
+                  <li><a href="/category/182974">JasperReport (4)</a></li>
+                
+                  <li><a href="/category/155852">java (18)</a></li>
+                
+                  <li><a href="/category/131097">jbpm4 (2)</a></li>
+                
+                  <li><a href="/category/155042">jfreeChart (3)</a></li>
+                
+                  <li><a href="/category/157196">jquery (7)</a></li>
+                
+                  <li><a href="/category/202499">jsp (4)</a></li>
+                
+                  <li><a href="/category/265283">Linux (1)</a></li>
+                
+                  <li><a href="/category/181358">Lucene (1)</a></li>
+                
+                  <li><a href="/category/269897">maven (7)</a></li>
+                
+                  <li><a href="/category/131096">mybatis (9)</a></li>
+                
+                  <li><a href="/category/165959">MySQL (5)</a></li>
+                
+                  <li><a href="/category/156935">oracle (29)</a></li>
+                
+                  <li><a href="/category/156541">poi (7)</a></li>
+                
+                  <li><a href="/category/304463">Servlet (4)</a></li>
+                
+                  <li><a href="/category/156737">实用技巧 (5)</a></li>
+                
+                  <li><a href="/category/156657">Spring (12)</a></li>
+                
+                  <li><a href="/category/175984">SpringMVC (13)</a></li>
+                
+                  <li><a href="/category/182468">spring Security (14)</a></li>
+                
+                  <li><a href="/category/154645">struts2 (5)</a></li>
+                
+                  <li><a href="/category/155732">swing (1)</a></li>
+                
+                  <li><a href="/category/177387">svn (1)</a></li>
+                
+                  <li><a href="/category/156444">web前端 (5)</a></li>
+                
+                  <li><a href="/category/253146">Weblogic (3)</a></li>
+                
+                  <li><a href="/category/156645">问题 (2)</a></li>
+                
+                  <li><a href="/category/186746">xml (2)</a></li>
+                
+                  <li><a href="/category/268768">面试 (1)</a></li>
+                
+              </ul>
+            </div>
+            <div id='month_blogs'>
+              <h5>社区版块</h5>
+              <ul>
+                <li><a href="/blog/news">我的资讯</a> (0)</li>
+                <li>
+                  <a href="/blog/post">我的论坛</a> (17)
+                </li>
+                <li><a href="/blog/answered_problems">我的问答</a> (4)</li>
+              </ul>
+            </div>
+            <div id="month_blogs">
+              <h5>存档分类</h5>
+              <ul>
+                
+                  <li><a href="/blog/monthblog/2015-05">2015-05</a> (2)</li>
+                
+                  <li><a href="/blog/monthblog/2014-12">2014-12</a> (3)</li>
+                
+                  <li><a href="/blog/monthblog/2014-11">2014-11</a> (9)</li>
+                
+                <li><a href="/blog/monthblog_more">更多存档...</a></li>
+              </ul>
+            </div>
+            
+            
+              <div id="comments_top">
+                <h5>评论排行榜</h5>
+                <ul>
+                  
+                    <li><a href="/blog/2123030" title="Spring使用Cache、整合Ehcache">Spring使用Cache、整合Ehcache</a></li>
+                  
+                    <li><a href="/blog/2154299" title="Spring Security（01）——初体验">Spring Security（01）——初体验</a></li>
+                  
+                    <li><a href="/blog/2119737" title="Ehcache（08）——可阻塞的Cache——BlockingCache">Ehcache（08）——可阻塞的Cache——Bloc ...</a></li>
+                  
+                    <li><a href="/blog/2119353" title="Ehcache（06）——监听器">Ehcache（06）——监听器</a></li>
+                  
+                    <li><a href="/blog/2163997" title="Spring Security（12）——Remember-Me功能">Spring Security（12）——Remember-Me功 ...</a></li>
+                  
+                </ul>
+              </div>
+            
+
+            <div id="guest_books">
+              <h5>最新评论</h5>
+              <ul>
+                
+                <li>
+                  <a href='http://yunkun666.iteye.com' target='_blank' title='yunkun666'>yunkun666</a>： 
+                  //这种应该更好吧public static Object  ...<br />
+                  <a href="/blog/1523785#bc2377608">如何正确遍历删除List中的元素，你会吗？</a>
+                </li>
+                
+                <li>
+                  <a href='http://vvv-110.iteye.com' target='_blank' title='vvv_110'>vvv_110</a>： 
+                  楼主在吗 使用maven profile以后配置文件里的值变成 ...<br />
+                  <a href="/blog/1900568#bc2377503">Maven简介（三）——profile介绍</a>
+                </li>
+                
+                <li>
+                  <a href='http://quanzichang0708.iteye.com' target='_blank' title='默默向上游'>默默向上游</a>： 
+                   ...<br />
+                  <a href="/blog/1343761#bc2377302">基于注解的SpringMVC简单介绍</a>
+                </li>
+                
+                <li>
+                  <a href='http://quanzichang0708.iteye.com' target='_blank' title='默默向上游'>默默向上游</a>： 
+                   多谢<br />
+                  <a href="/blog/1750680#bc2377166">SpringMVC中使用Interceptor拦截器</a>
+                </li>
+                
+                <li>
+                  <a href='http://wokao-wg.iteye.com' target='_blank' title='wokao_wg'>wokao_wg</a>： 
+                  生成不抱错，但是文件打不开啊，文件已损坏~~~<br />
+                  <a href="/blog/2031335#bc2377048">使用POI读写Word doc文件</a>
+                </li>
+                
+              </ul>
+            </div>
+
+            <div class="local_bottom"></div>
+          
+        </div>
+      </div>
+
+      <div id="footer" class="clearfix">
+        <div id="copyright">
+          <hr/>
+          声明：ITeye文章版权属于作者，受法律保护。没有作者书面许可不得转载。若作者同意转载，必须以超链接形式标明文章原始出处和作者。<br />
+          &copy; 2003-2015 ITeye.com.   All rights reserved.  [ 京ICP证110151号  京公网安备110105010620 ]
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+  document.write("<img src='http://stat.iteye.com/?url="+ encodeURIComponent(document.location.href) + "&referrer=" + encodeURIComponent(document.referrer) + "&user_id=' width='0' height='0' />");
+</script>
+
+<script src="http://csdnimg.cn/pubfooter/js/tracking.js?version=20130923164150" type="text/javascript"></script>
+
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-29372414-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+      
+    
+  </body>
+</html>
